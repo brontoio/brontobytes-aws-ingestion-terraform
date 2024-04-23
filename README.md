@@ -1,4 +1,4 @@
-# brontobytes-aws-ingestion-terraform
+# BrontoBytes AWS Log Forwarder
 
 Terraform module to set up a lambda function and necessary permissions to forward to BrontoBytes
 logs delivered to AWS S3 and Cloudwatch.
