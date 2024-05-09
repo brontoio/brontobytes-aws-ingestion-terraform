@@ -19,7 +19,7 @@ resource "aws_lambda_function" "this" {
   architectures    = ["arm64"]
 
   function_name = var.name
-  role          = aws_iam_role.this.arn
+  role          = local.role_arn
   handler       = "forward.forward_logs"
 
   logging_config {

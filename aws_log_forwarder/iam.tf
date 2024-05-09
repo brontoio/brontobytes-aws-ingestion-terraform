@@ -12,7 +12,8 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "this" {
-  name               = "${var.name}-role"
+  count              = var.role_name == null ? 1 : 0
+  name               = local.role_name
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -35,10 +36,10 @@ resource "aws_iam_policy" "s3_access" {
 resource "aws_iam_policy_attachment" "s3_access" {
   name       = "S3AccessLoggingBucketRO"
   policy_arn = aws_iam_policy.s3_access.arn
-  roles      = [aws_iam_role.this.name]
+  roles      = [local.role_name]
 }
 
 resource "aws_iam_role_policy_attachment" "basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  role       = aws_iam_role.this.name
+  role       = local.role_name
 }

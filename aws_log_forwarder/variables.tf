@@ -60,3 +60,8 @@ variable "artifact_version" {
   description = "The version of the log forwarder"
   default     = "latest"
 }
+
+variable "role_name" {
+  description = "The name of an existing role to be used. No role is created if this property is set."
+  default     = null
+}

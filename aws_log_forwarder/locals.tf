@@ -1,4 +1,8 @@
+data "aws_caller_identity" "current" {}
+
 locals {
+  role_name                  = var.role_name == null ? "${var.name}-role" : var.role_name
+  role_arn                   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name}"
   logging_bucket_arn         = "arn:aws:s3:::${var.logging_bucket.name}"
   prefix_with_trailing_slash = endswith(var.logging_bucket.prefix, "/") ? var.logging_bucket.prefix : format("%s/", var.logging_bucket.prefix)
   logging_bucket_prefix_arn  = "${local.logging_bucket_arn}/${local.prefix_with_trailing_slash}"
