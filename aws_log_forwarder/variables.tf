@@ -65,3 +65,9 @@ variable "role_name" {
   description = "The name of an existing role to be used. No role is created if this property is set."
   default     = null
 }
+
+variable "with_s3_notification" {
+  description = "Whether to set S3 notifications (See README file for details)"
+  type        = bool
+  default     = true
+}
