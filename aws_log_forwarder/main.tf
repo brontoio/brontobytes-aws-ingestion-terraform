@@ -57,6 +57,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
+  count  = var.with_s3_notification ? 1 : 0
   bucket = var.logging_bucket.name
 
   lambda_function {
