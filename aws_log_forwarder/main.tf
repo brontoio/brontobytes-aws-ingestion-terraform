@@ -28,8 +28,9 @@ resource "aws_lambda_function" "this" {
     system_log_level      = "INFO"
   }
 
-  runtime = "python3.12"
-  timeout = var.timeout_sec
+  runtime     = "python3.12"
+  timeout     = var.timeout_sec
+  memory_size = var.memory_size_mb
 
   ephemeral_storage {
     size = var.storage_size_mb

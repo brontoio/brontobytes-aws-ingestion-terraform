@@ -29,6 +29,11 @@ variable "timeout_sec" {
   default     = 3
 }
 
+variable "memory_size_mb" {
+  description = "The lambda function memory size in MB"
+  default     = 128
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
