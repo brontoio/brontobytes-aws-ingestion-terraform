@@ -30,7 +30,8 @@ to trigger the forwarding lambda function, rather than S3 notifications.
 
 ## Usage
 
-Here is a sample usage of this Terraform module.
+Here is a sample usage of this Terraform module, where lambda logs, S3 access logs and CloudFront standard access logs 
+are forwarded to Bronto. 
 ```hcl
 module "bronto_aws_log_forwarding" {
   source = "git::https://github.com/logchatio/brontobytes-aws-ingestion-terraform.git//aws_log_forwarder"
@@ -54,6 +55,11 @@ module "bronto_aws_log_forwarding" {
       logname  = "<BRONTO DESTINATION LOG_NAME>"
       logset   = "<BRONTO DESTINATION COLLECTION>"
       log_type = "s3_access_log"
+    }
+    "<CLOUDFRONT_DISTRIBUBTION_ID>" = {
+      logname  = "<BRONTO DESTINATION LOG_NAME>"
+      logset   = "<BRONTO DESTINATION COLLECTION>"
+      log_type = "cf_standard_access_log"
     }
   }
 }
