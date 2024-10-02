@@ -6,7 +6,7 @@ variable "logging_bucket" {
   description = "Config representing the bucket containing logs. The bucket may contain logs from different sources under the provided prefix"
   type        = object({
     name: string
-    prefix: string
+    prefix: optional(string, "")
   })
 }
 
