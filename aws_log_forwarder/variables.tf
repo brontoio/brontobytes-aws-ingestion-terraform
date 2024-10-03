@@ -76,3 +76,15 @@ variable "with_s3_notification" {
   type        = bool
   default     = true
 }
+
+variable "with_eventbridge_rule" {
+  description = "Whether to create EventBridge rule"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eventbridge_notification" {
+  description = "Whether to get notifications via EventBridge"
+  type        = bool
+  default     = false
+}
