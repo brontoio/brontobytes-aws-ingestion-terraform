@@ -58,12 +58,26 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  count  = var.with_s3_notification ? 1 : 0
+  count  = var.with_s3_notification || var.enable_eventbridge_notification ? 1 : 0
   bucket = var.logging_bucket.name
+  eventbridge = var.enable_eventbridge_notification
 
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.this.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = var.logging_bucket.prefix
+
+  dynamic lambda_function {
+    for_each = var.with_s3_notification ? { (var.name) = "1" } : {}
+    content {
+      lambda_function_arn = aws_lambda_function.this.arn
+      events              = ["s3:ObjectCreated:*"]
+      filter_prefix       = var.logging_bucket.prefix
+    }
   }
+}
+
+module "event_bridge" {
+  count  = var.with_eventbridge_rule ? 1 : 0
+  source = "./notifications/"
+  lambda_function_arn = aws_lambda_function.this.arn
+  logging_bucket      = var.logging_bucket
+  name                = var.name
+  tags                = { Name = "bronto-log-forwarder" }
 }

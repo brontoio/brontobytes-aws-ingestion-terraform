@@ -37,9 +37,11 @@ resource "aws_iam_policy_attachment" "s3_access" {
   name       = "S3AccessLoggingBucketRO"
   policy_arn = aws_iam_policy.s3_access.arn
   roles      = [local.role_name]
+  depends_on = [aws_iam_role.this]
 }
 
 resource "aws_iam_role_policy_attachment" "basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   role       = local.role_name
+  depends_on = [aws_iam_role.this]
 }
