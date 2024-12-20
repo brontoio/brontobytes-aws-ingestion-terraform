@@ -34,7 +34,7 @@ Here is a sample usage of this Terraform module, where lambda logs, S3 access lo
 are forwarded to Bronto. 
 ```hcl
 module "bronto_aws_log_forwarding" {
-  source = "git::https://github.com/logchatio/brontobytes-aws-ingestion-terraform.git//aws_log_forwarder"
+  source = "git::https://github.com/brontoio/brontobytes-aws-ingestion-terraform.git//aws_log_forwarder"
   with_s3_notification = false
   logging_bucket   = {name="<LOGGING_BUCKET_NAME>", prefix="<LOGGING_BUCKET_PREFIX>"}
   name             = "bronto_aws_log_forwarder"
@@ -86,7 +86,7 @@ Bronto related configuration:
 - `bronto_api_key`: the Bronto API key
 - `uncompressed_max_batch_size`: the max size of the batches of data to be forwarded to Bronto
 - `destination_config`: list of configurations indicating the type of data to be forwarded as well as the destination 
-in Bronto where to send the data to. More details can be found in the [forwarding Lambda function repository](https://github.com/logchatio/brontobytes-aws-ingestion-python). 
+in Bronto where to send the data to. More details can be found in the [forwarding Lambda function repository](https://github.com/brontoio/brontobytes-aws-ingestion-python). 
 
 
 **Note:** The `with_s3_notification` variable makes it possible to control whether S3 notifications get set up as part of 
