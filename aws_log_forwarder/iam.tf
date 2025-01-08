@@ -23,7 +23,8 @@ data "aws_iam_policy_document" "s3_access" {
     effect = "Allow"
     resources = [
       "${local.logging_bucket_prefix_arn}*",
-      "${var.artifact_bucket.arn}/${var.name}/*"
+      "${var.artifact_bucket.arn}/${var.name}/*",
+      "${var.artifact_bucket.arn}/${local.otel_config_s3_key}"
     ]
     actions   = ["s3:Get*", "s3:List*"]
   }

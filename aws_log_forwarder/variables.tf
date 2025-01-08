@@ -11,11 +11,12 @@ variable "logging_bucket" {
 }
 
 variable "destination_config" {
-  description = "Config mapping prefixes/logs to BrontoBytes logname and logset"
+  description = "Config mapping prefixes/logs to BrontoBytes logname and logset. Even though not recommended, set_individual_subscription allows to create an individual subscription filter for cloudwatch log groups"
   type        = map(object({
     logname: string
     logset: string
     log_type: string
+    set_individual_subscription: optional(bool, false)
   }))
 }
 
@@ -44,8 +45,13 @@ variable "bronto_api_key" {
 }
 
 variable "bronto_ingestion_endpoint" {
-  description = "Brontobytes ingestion endpoint"
+  description = "Bronto ingestion endpoint"
   default     = "https://ingestion.brontobytes.io/"
+}
+
+variable "bronto_otel_logs_endpoint" {
+  description = "Bronto OTEL ingestion endpoint, e.g. https://ingestion.eu.bronto.io/v1/logs"
+  default     = null
 }
 
 variable "uncompressed_max_batch_size" {
@@ -87,4 +93,34 @@ variable "enable_eventbridge_notification" {
   description = "Whether to get notifications via EventBridge"
   type        = bool
   default     = false
+}
+
+variable "account_level_cloudwatch_subscription" {
+  description = "Account level subscription. The log group matching "
+  type        = object({
+    enable: optional(bool, true)
+    excluded_log_groups: optional(list(string), [])
+  })
+}
+
+variable "cloudwatch_default_collection" {
+  description = "The default Bronto Collection where to forward Cloudwatch logs to"
+  default     = null
+}
+
+variable "function_log_retention_in_days" {
+  description = "The Cloudwatch retention of the lambda forwarder logs"
+  default     = 365
+}
+
+variable "forwarder_logs" {
+  description = "Config to forward the forwarder fct logs"
+  type        = object({
+    forward_enable: optional(bool, true)
+    service_name: optional(string, "bronto-aws-forwarder")
+    collector_extension_arn: optional(string)
+  })
+  default = {
+    forward_enable = false
+  }
 }
