@@ -1,0 +1,23 @@
+receivers:
+  telemetryapi:
+    types: ["platform", "function"]
+processors:
+  batch:
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp/bronto:
+    logs_endpoint: $${env:bronto_otel_logs_endpoint}
+    compression: none
+    headers:
+      x-bronto-api-key: $${env:bronto_api_key}
+      x-bronto-logset: ${cloudwatch_default_collection}
+      x-bronto-service-name: ${service_name}
+      User-Agent: OpenTelemetry Collector Contrib Lambda
+      Content-Type: application/x-protobuf
+service:
+  pipelines:
+    logs/bronto:
+      receivers: [telemetryapi]
+      processors: [batch]
+      exporters: [otlphttp/bronto]

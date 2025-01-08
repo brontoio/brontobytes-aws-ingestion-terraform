@@ -47,20 +47,25 @@ module "bronto_aws_log_forwarding" {
   uncompressed_max_batch_size = 5000000  # 5Mb
   destination_config   = {
     "/aws/lambda/my-function-name" = {
-      logname  = "<BRONTO DESTINATION LOG_NAME>"
-      logset   = "<BRONTO DESTINATION COLLECTION>"
-      log_type = "cloudwatch_log"
+      dataset    = "<BRONTO DESTINATION LOG_NAME>"
+      collection = "<BRONTO DESTINATION COLLECTION>"
+      log_type   = "cloudwatch_log"
     }
     "<BUCKET_WHOSE_ACCESS_LOGS_ARE_COLLECTED>" = {
-      logname  = "<BRONTO DESTINATION LOG_NAME>"
-      logset   = "<BRONTO DESTINATION COLLECTION>"
-      log_type = "s3_access_log"
+      dataset    = "<BRONTO DESTINATION LOG_NAME>"
+      collection = "<BRONTO DESTINATION COLLECTION>"
+      log_type   = "s3_access_log"
     }
     "<CLOUDFRONT_DISTRIBUBTION_ID>" = {
-      logname  = "<BRONTO DESTINATION LOG_NAME>"
-      logset   = "<BRONTO DESTINATION COLLECTION>"
-      log_type = "cf_standard_access_log"
+      dataset    = "<BRONTO DESTINATION LOG_NAME>"
+      collection = "<BRONTO DESTINATION COLLECTION>"
+      log_type   = "cf_standard_access_log"
     }
+  },
+  cloudwatch_default_collection = "Cloudwatch"
+  account_level_cloudwatch_subscription = {
+    enable = true
+    excluded_log_groups = ["log_group1", "log_group2"]
   }
 }
 ```
@@ -86,7 +91,12 @@ Bronto related configuration:
 - `bronto_api_key`: the Bronto API key
 - `uncompressed_max_batch_size`: the max size of the batches of data to be forwarded to Bronto
 - `destination_config`: list of configurations indicating the type of data to be forwarded as well as the destination 
-in Bronto where to send the data to. More details can be found in the [forwarding Lambda function repository](https://github.com/brontoio/brontobytes-aws-ingestion-python). 
+in Bronto where to send the data to. For Cloudwatch log groups, this module provides the ability to 
+create an account level subscription filter via the `account_level_cloudwatch_subscription` property. When enabled, 
+data of all log groups will be received and forwarded by the Bronto Lambda forwarder. The destination collection can be 
+set with the `cloudwatch_default_collection` property, while the destination dataset is represented by the log group 
+name. More details can be found in the [forwarding Lambda function repository](https://github.com/brontoio/brontobytes-aws-ingestion-python). 
+
 
 
 **Note:** The `with_s3_notification` variable makes it possible to control whether S3 notifications get set up as part of 
