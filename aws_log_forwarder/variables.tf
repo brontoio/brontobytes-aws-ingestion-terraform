@@ -59,11 +59,12 @@ variable "uncompressed_max_batch_size" {
 }
 
 variable "artifact_bucket" {
-  description = "Config object representing the artifact bucket (a.k.a. codedeploy bucket)"
+  description = "Config object representing the artifact bucket (a.k.a. codedeploy bucket). When create = false and name is null, default name is bronto-aws-forwarder-<ACCOUNT_ID>-<REGION>"
   type        = object({
-    arn: string
-    id: string
-    name: string
+    create: optional(bool, false)
+    arn: optional(string)
+    id: optional(string)
+    name: optional(string)
   })
 }
 

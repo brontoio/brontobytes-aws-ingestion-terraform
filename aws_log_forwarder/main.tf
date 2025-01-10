@@ -6,15 +6,23 @@ data "http" "package_b64sha256" {
   url = local.artefact_url_b64sha256
 }
 
+module "artefact_bucket" {
+  count  = var.artifact_bucket.create ? 1 : 0
+  source = "./s3_bucket"
+  name   = local.artefact_bucket["name"]
+  tags   = var.tags
+}
+
 resource "aws_s3_object" "log_forwarder" {
-  bucket         = var.artifact_bucket.name
+  bucket         = local.artefact_bucket["name"]
   key            = "${var.name}/${local.filename}"
   content_base64 = data.http.package.response_body_base64
+  depends_on     = [module.artefact_bucket]
 }
 
 resource "aws_s3_object" "otel_collector_config" {
   count          = var.forwarder_logs.forward_enable ? 1 : 0
-  bucket         = var.artifact_bucket.name
+  bucket         = local.artefact_bucket["name"]
   key            = local.otel_config_s3_key
   content_base64 = base64encode(templatefile("${path.module}/resources/collector.yaml.tmpl",
     {service_name = var.forwarder_logs.service_name, cloudwatch_default_collection = var.cloudwatch_default_collection}))
@@ -63,7 +71,7 @@ resource "aws_lambda_function" "this" {
   }
   layers = var.forwarder_logs.forward_enable ? [local.collector_extension_arn] : []
   tags = { service = "aws_logging" }
-
+  depends_on = [module.artefact_bucket, aws_s3_object.log_forwarder, aws_iam_role.this]
 }
 
 resource "aws_lambda_permission" "allow_bucket" {
