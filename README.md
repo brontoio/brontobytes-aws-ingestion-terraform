@@ -80,7 +80,9 @@ For the forwarding Lambda function:
 
 The lambda code artifact is automatically downloaded from Bronto's Github repository and uploaded to S3. The following 
 attributes specify the bucket where to upload the artifact to so that is can be used to define the forwarding lambda. 
-- `artifact_bucket`: an object representing the S3 bucket where the lambda code artifact should be stored (`name`, `id` and `arn` fields are required).
+- `artifact_bucket`: an object representing the S3 bucket where the lambda code artifact should be stored. If the 
+`create` attribute is set to `true`, then a bucket is created with either the specified `name` or with a default name 
+(currently `bronto-aws-forwarder-<ACCOUNT_ID>-<REGION>`).
 - `artifact_version`: the version of the lambda artifact to be used, e.g. `latest`
 
 For data delivered to S3:
