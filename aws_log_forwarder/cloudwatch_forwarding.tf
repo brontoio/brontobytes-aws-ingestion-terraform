@@ -7,6 +7,7 @@ resource "aws_cloudwatch_log_subscription_filter" "this" {
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
+  count         = local.enable_cloudwatch_forwarding ? 1 : 0
   statement_id  = "${replace(title(replace(var.name, "_", " ")), " ", "")}AllowExecutionFromCloudwatch"
   action        = "lambda:InvokeFunction"
   function_name = var.name
@@ -14,7 +15,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 }
 
 resource "aws_cloudwatch_log_account_policy" "subscription_filter" {
-  count       = var.account_level_cloudwatch_subscription.enable ? 1 : 0
+  count       = local.enable_account_level_subscription_filter ? 1 : 0
   policy_name = "subscription-filter"
   policy_type = "SUBSCRIPTION_FILTER_POLICY"
   policy_document = jsonencode(

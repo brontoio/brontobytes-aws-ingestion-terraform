@@ -8,6 +8,7 @@ variable "logging_bucket" {
     name: string
     prefix: optional(string, "")
   })
+  default = null
 }
 
 variable "destination_config" {
@@ -66,6 +67,10 @@ variable "artifact_bucket" {
     id: optional(string)
     name: optional(string)
   })
+  validation {
+    condition = var.artifact_bucket.create || var.artifact_bucket.name != null
+    error_message = "The artefact bucket name must be specified when using an existing artefact bucket"
+  }
 }
 
 variable "artifact_version" {
@@ -102,6 +107,7 @@ variable "account_level_cloudwatch_subscription" {
     enable: optional(bool, true)
     excluded_log_groups: optional(list(string), [])
   })
+  default = null
 }
 
 variable "cloudwatch_default_collection" {
@@ -124,4 +130,10 @@ variable "forwarder_logs" {
   default = {
     forward_enable = false
   }
+}
+
+variable "attributes" {
+  description = "Attributes that apply to all data forwarded, e.g. region=us-east-1"
+  type        = map(string)
+  default     = {}
 }

@@ -1,25 +1,3 @@
-data "http" "package" {
-  url = local.artefact_url
-}
-
-data "http" "package_b64sha256" {
-  url = local.artefact_url_b64sha256
-}
-
-module "artefact_bucket" {
-  count  = var.artifact_bucket.create ? 1 : 0
-  source = "./s3_bucket"
-  name   = local.artefact_bucket["name"]
-  tags   = var.tags
-}
-
-resource "aws_s3_object" "log_forwarder" {
-  bucket         = local.artefact_bucket["name"]
-  key            = "${var.name}/${local.filename}"
-  content_base64 = data.http.package.response_body_base64
-  depends_on     = [module.artefact_bucket]
-}
-
 resource "aws_s3_object" "otel_collector_config" {
   count          = var.forwarder_logs.forward_enable ? 1 : 0
   bucket         = local.artefact_bucket["name"]
@@ -67,42 +45,10 @@ resource "aws_lambda_function" "this" {
       max_batch_size            = var.uncompressed_max_batch_size
       cloudwatch_default_collection      = var.cloudwatch_default_collection
       OPENTELEMETRY_COLLECTOR_CONFIG_URI = var.forwarder_logs.forward_enable ? local.otel_config_s3_uri : null
+      attributes                         = join(",", [for key,value in var.attributes: "${key}=${value}"])
     }
   }
   layers = var.forwarder_logs.forward_enable ? [local.collector_extension_arn] : []
   tags = { service = "aws_logging" }
   depends_on = [module.artefact_bucket, aws_s3_object.log_forwarder, aws_iam_role.this]
-}
-
-resource "aws_lambda_permission" "allow_bucket" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.this.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = local.logging_bucket_arn
-}
-
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  count  = var.with_s3_notification || var.enable_eventbridge_notification ? 1 : 0
-  bucket = var.logging_bucket.name
-  eventbridge = var.enable_eventbridge_notification
-
-
-  dynamic lambda_function {
-    for_each = var.with_s3_notification ? { (var.name) = "1" } : {}
-    content {
-      lambda_function_arn = aws_lambda_function.this.arn
-      events              = ["s3:ObjectCreated:*"]
-      filter_prefix       = var.logging_bucket.prefix
-    }
-  }
-}
-
-module "event_bridge" {
-  count  = var.with_eventbridge_rule ? 1 : 0
-  source = "./notifications/"
-  lambda_function_arn = aws_lambda_function.this.arn
-  logging_bucket      = var.logging_bucket
-  name                = var.name
-  tags                = { Name = "bronto-log-forwarder" }
 }
