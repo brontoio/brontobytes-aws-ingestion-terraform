@@ -95,6 +95,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     }
   }
 }
+
 # Extra bucket metrics
 resource "aws_s3_bucket_metric" "this" {
   count  = var.extra_metrics.enabled ? 1 : 0
