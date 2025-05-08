@@ -4,6 +4,7 @@ data "aws_region" "current" {}
 
 locals {
   # Lambda
+  create_role                             = var.role_name == null
   role_name                               = var.role_name == null ? "${var.name}-role" : var.role_name
   role_arn                                = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name}"
   fct_destination_properties              = {
@@ -11,7 +12,8 @@ locals {
     {for prop in keys(value) : prop => value[prop] if prop != "set_individual_subscription"}
   }
   collector_extension_arn = var.forwarder_logs.collector_extension_arn != null ? var.forwarder_logs.collector_extension_arn : "arn:aws:lambda:${data.aws_region.current.name}:184161586896:layer:opentelemetry-collector-arm64-0_12_0:1"
-  otel_config_s3_key = "otel_config/collector.yaml"
+  otel_config_s3_key        = "config/collector.yaml"
+  destination_config_s3_key = "config/destination_config.json"
   otel_config_s3_uri = "s3://${local.artefact_bucket["name"]}.s3.${data.aws_region.current.name}.amazonaws.com/${local.otel_config_s3_key}"
 
   # s3 forwarding
