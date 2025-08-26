@@ -21,6 +21,14 @@ variable "destination_config" {
   }))
 }
 
+variable "paths_regex" {
+  description = "List of regex patterns to match against S3 key, e.g. [{\"pattern\": \"regex1\"}, {\"pattern\": \"regex2\"}]. Note that the regex pattern must include a capture group named dest_config_id"
+  type        = list(object({
+    pattern: string
+  }))
+  default = []
+}
+
 variable "storage_size_mb" {
   description = "The storage size in MB for the lambda function"
   default     = 512
