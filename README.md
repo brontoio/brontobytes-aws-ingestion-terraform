@@ -46,19 +46,24 @@ module "bronto_aws_log_forwarding" {
   attributes = { region = "us-east-1", account_id = "12345678"}
   destination_config   = {
     "/aws/lambda/my-function-name" = {
-      dataset    = "<BRONTO DESTINATION LOG_NAME>"
+      dataset    = "<BRONTO DESTINATION DATASET>"
       collection = "<BRONTO DESTINATION COLLECTION>"
       log_type   = "cloudwatch_log"
     }
     "<BUCKET_WHOSE_ACCESS_LOGS_ARE_COLLECTED>" = {
-      dataset    = "<BRONTO DESTINATION LOG_NAME>"
+      dataset    = "<BRONTO DESTINATION DATASET>"
       collection = "<BRONTO DESTINATION COLLECTION>"
       log_type   = "s3_access_log"
     }
     "<CLOUDFRONT_DISTRIBUBTION_ID>" = {
-      dataset    = "<BRONTO DESTINATION LOG_NAME>"
+      dataset    = "<BRONTO DESTINATION DATASET>"
       collection = "<BRONTO DESTINATION COLLECTION>"
       log_type   = "cf_standard_access_log"
+    }
+    "my_config_id" = {
+      dataset    = "<BRONTO DESTINATION DATASET>"
+      collection = "<BRONTO DESTINATION COLLECTION>"
+      log_type   = "default"  # this sets the types of parser to be applied. `default` means no parser and is typically suitable for JSON structured logs
     }
   },
   artifact_bucket  = {name="LAMBDA_ARTIFACT_BUCKET_NAME", id="LAMBDA_ARTIFACT_BUCKET_NAME", arn="arn:aws:s3:::LAMBDA_ARTIFACT_BUCKET_NAME"}
@@ -152,6 +157,20 @@ Bronto related configuration, these are provided to the Lambda function as envir
   in Bronto where to send the data to. When forwarding data from Cloudwatch log groups, it is recommended to use account 
 level subscription filters and therefore not to add entries for log groups to this map. For data forwarded from S3, only 
 data matching entries in this map is forwarded and adding entries is therefore required in that case.
+- `paths_regex`: list of regex patterns to match against S3 key, e.g. 
+
+```json
+[{"pattern": "regex1 with dest_config_id capture group"}, {"pattern": "regex2 with dest_config_id capture group"}]
+``` 
+
+Regex expressions follow the [Python syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax). This 
+variable defaults to `[]` when not specified. It only needs to be set for cases where AWS
+service logs are delivered to custom S3 keys, e.g. objects containing log data are not delivered directly by the AWS 
+service and the S3 key of the destination is custom. Note that the regex pattern must include a capture group named 
+`dest_config_id`. The value of this group is then matched to entries in the `destination_config` map. For instance,
+if `paths_regex` is set to `[{"pattern": ".*/prefix-(?P(dest_config_id)my_config_id)-some-suffix"}` and s3 keys of 
+objects delivered to S3 are of the form such as `s3/key/pref/prefix-my_config_id-some-suffix/some/more/suffix`, then the 
+entry with key `my_config_id` in the destination configuration above will apply to this log data.
 - `attributes`: map of keys and values added to log data as log attributes, e.g. `{ region = "us-east-1", account_id = "12345678"}` 
 
 Lambda artefact:

@@ -15,6 +15,7 @@ locals {
   collector_extension_arn = var.forwarder_logs.collector_extension_arn != null ? var.forwarder_logs.collector_extension_arn : "arn:aws:lambda:${local.region_name}:184161586896:layer:opentelemetry-collector-arm64-0_12_0:1"
   otel_config_s3_key        = "config/collector.yaml"
   destination_config_s3_key = "config/${local.region_name}/${replace(var.name, "/", "_")}/destination_config.json"
+  paths_regex_config_s3_key = "config/${local.region_name}/${replace(var.name, "/", "_")}/paths_regex_config.json"
   otel_config_s3_uri = "s3://${local.artefact_bucket["name"]}.s3.${local.region_name}.amazonaws.com/${local.otel_config_s3_key}"
 
   # s3 forwarding

@@ -12,6 +12,12 @@ resource "aws_s3_object" "destination_config" {
   content_base64 = base64encode(jsonencode(local.fct_destination_properties))
 }
 
+resource "aws_s3_object" "paths_regex_config" {
+  bucket         = local.artefact_bucket["name"]
+  key            = local.paths_regex_config_s3_key
+  content_base64 = base64encode(jsonencode(var.paths_regex))
+}
+
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/lambda/${var.name}"
   retention_in_days = var.function_log_retention_in_days
@@ -45,6 +51,7 @@ resource "aws_lambda_function" "this" {
   environment {
     variables = {
       CONFIG_S3_URI             = "s3://${aws_s3_object.destination_config.bucket}/${aws_s3_object.destination_config.key}"
+      CONFIG_PATHS_REGEX_S3_URI = "s3://${aws_s3_object.destination_config.bucket}/${aws_s3_object.paths_regex_config.key}"
       bronto_api_key            = var.bronto_api_key
       bronto_endpoint           = var.bronto_ingestion_endpoint
       bronto_otel_logs_endpoint = var.bronto_otel_logs_endpoint

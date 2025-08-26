@@ -8,7 +8,8 @@ data "aws_iam_policy_document" "s3_access" {
       "${local.logging_bucket_prefix_arn}*",
       "${local.artefact_bucket["arn"]}/${var.name}/*",
       "${local.artefact_bucket["arn"]}/${local.otel_config_s3_key}",
-      "${local.artefact_bucket["arn"]}/${local.destination_config_s3_key}"
+      "${local.artefact_bucket["arn"]}/${local.destination_config_s3_key}",
+      "${local.artefact_bucket["arn"]}/${local.paths_regex_config_s3_key}"
     ]
     actions   = ["s3:Get*", "s3:List*"]
   }
