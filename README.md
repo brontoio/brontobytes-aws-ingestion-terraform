@@ -152,6 +152,8 @@ Lambda related configuration:
 
 Bronto related configuration, these are provided to the Lambda function as environment variables:
 - `bronto_api_key`: the Bronto API key
+- `bronto_ingestion_endpoint`: the Bronto ingestion endpoint, e.g. https://ingestion.eu.bronto.io/. This endpoint must
+point to the Bronto system where the API key was created.  
 - `uncompressed_max_batch_size`: the max size of the batches of data to be forwarded to Bronto
 - `destination_config`: map of configurations indicating the type of data to be forwarded as well as the destination
   in Bronto where to send the data to. When forwarding data from Cloudwatch log groups, it is recommended to use account 

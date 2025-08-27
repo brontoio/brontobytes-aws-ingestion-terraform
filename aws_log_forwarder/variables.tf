@@ -55,7 +55,7 @@ variable "bronto_api_key" {
 
 variable "bronto_ingestion_endpoint" {
   description = "Bronto ingestion endpoint"
-  default     = "https://ingestion.brontobytes.io/"
+  default     = "https://ingestion.eu.bronto.io/"
 }
 
 variable "bronto_otel_logs_endpoint" {
