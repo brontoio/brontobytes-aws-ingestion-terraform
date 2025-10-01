@@ -77,6 +77,7 @@ module "bronto_aws_log_forwarding" {
     enable = true
     excluded_log_groups = ["log_group1", "log_group2"]
   }
+  bronto_tags = {environment = "production", region="eu-west-1"}
 }
 ```
 
@@ -106,6 +107,7 @@ module "bronto_aws_log_forwarding" {
     enable = true
     excluded_log_groups = ["log_group1", "log_group2"]
   }
+  bronto_tags = {environment = "production", region="eu-west-1"}
 }
 ```
 
@@ -137,6 +139,7 @@ module "bronto_aws_log_forwarding" {
   # Forwarding data from S3
   with_s3_notification = false
   logging_bucket = {name="<LOGGING_BUCKET_NAME>", prefix="<LOGGING_BUCKET_PREFIX>"}
+  bronto_tags = {environment = "production", region="eu-west-1"}
 }
 ```
 
@@ -154,6 +157,10 @@ Bronto related configuration, these are provided to the Lambda function as envir
 - `bronto_api_key`: the Bronto API key
 - `bronto_ingestion_endpoint`: the Bronto ingestion endpoint, e.g. https://ingestion.eu.bronto.io/. This endpoint must
 point to the Bronto system where the API key was created.  
+- `bronto_tags`: map of key-value pairs representing tags that are applied to destination Bronto datasets, e.g. `{environment="production", region="eu-west-1"}`.
+- `aggregator`: the name of an aggregator to use: either `java_stack_trace` or `default`. This property defaults to `default` if not set. 
+Aggregators aggregate multiline log entries into a single entry. The `default` aggregator is a
+ noop (no entries get aggregated), while the `java_stack_trace` aggregator aggregates Java stack trace entries into a single one. 
 - `uncompressed_max_batch_size`: the max size of the batches of data to be forwarded to Bronto
 - `destination_config`: map of configurations indicating the type of data to be forwarded as well as the destination
   in Bronto where to send the data to. When forwarding data from Cloudwatch log groups, it is recommended to use account 

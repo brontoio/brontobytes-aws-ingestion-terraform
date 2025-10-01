@@ -58,7 +58,9 @@ resource "aws_lambda_function" "this" {
       max_batch_size            = var.uncompressed_max_batch_size
       cloudwatch_default_collection      = var.cloudwatch_default_collection
       OPENTELEMETRY_COLLECTOR_CONFIG_URI = var.forwarder_logs.forward_enable ? local.otel_config_s3_uri : null
+      aggregator                         = var.aggregator != null ? var.aggregator : null
       attributes                         = join(",", [for key,value in var.attributes: "${key}=${value}"])
+      tags                               = join(",", [for key,value in var.bronto_tags: "${key}=${value}"])
     }
   }
   layers = var.forwarder_logs.forward_enable ? [local.collector_extension_arn] : []

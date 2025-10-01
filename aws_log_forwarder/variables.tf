@@ -145,3 +145,14 @@ variable "attributes" {
   type        = map(string)
   default     = {}
 }
+
+variable "aggregator" {
+  description = "The name of the aggregator to be applied in order to aggregate multiple log lines into a single one. Currently only `java_stack_trace` and null are supported. No aggregator applies when this property is set to null."
+  default     = null
+}
+
+variable "bronto_tags" {
+  description = "Tags that apply to all data forwarded, e.g. environment=production,region=us-east-1"
+  type        = map(string)
+  default     = {}
+}
