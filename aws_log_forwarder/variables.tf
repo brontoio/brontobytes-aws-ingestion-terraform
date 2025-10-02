@@ -17,8 +17,19 @@ variable "destination_config" {
     logname: string
     logset: string
     log_type: string
-    set_individual_subscription: optional(bool, false)
+    set_individual_subscription: optional(bool)
+    subscription_filter_pattern: optional(string)
   }))
+  validation {
+    # set_individual_subscription is only relevant for cloudwatch logs
+    condition     = length([for key in keys(var.destination_config): key if (var.destination_config[key].set_individual_subscription != null && var.destination_config[key].log_type != "cloudwatch_log")]) == 0
+    error_message = "set_individual_subscription should only be set if log_type=cloudwatch_log"
+  }
+  validation {
+    # subscription_filter_pattern should only be specified if set_individual_subscription is set to true
+    condition     = length([for key in keys(var.destination_config): key if (var.destination_config[key].subscription_filter_pattern != null && var.destination_config[key].set_individual_subscription != true)]) == 0  # set_individual_subscription != true means that it is null or false
+    error_message = "subscription_filter_pattern should only be set if set_individual_subscription=true"
+  }
 }
 
 variable "paths_regex" {
@@ -155,4 +166,9 @@ variable "bronto_tags" {
   description = "Tags that apply to all data forwarded, e.g. environment=production,region=us-east-1"
   type        = map(string)
   default     = {}
+}
+
+variable "default_subscription_filter_pattern" {
+  description = "The subscription filter pattern to apply if no specific filter is defined at the log group level"
+  default     = ""
 }

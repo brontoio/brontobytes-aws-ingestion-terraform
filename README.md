@@ -24,7 +24,7 @@ as to parse its content and send it to Bronto for ingestion.
 
 ### Forwarding logs delivered to AWS Cloudwatch
 
-This follows the same principle as for forwarding logs from S3, except that a Cloudwatch Subscriptions are used in order 
+This follows the same principle as for forwarding logs from S3, except that Cloudwatch Subscription Filters are used in order 
 to trigger the forwarding lambda function, rather than S3 notifications. It is recommended to use an account level 
 subscription filter rather than individual subscriptions per log group.
 
@@ -97,6 +97,8 @@ module "bronto_aws_log_forwarding" {
       dataset    = "<BRONTO DESTINATION LOG_NAME>"
       collection = "<BRONTO DESTINATION COLLECTION>"
       log_type   = "cloudwatch_log"
+      set_individual_subscription = true
+      subscription_filter_pattern = "<FILTER_PATTERN>"  # only relevant if set_individual_subscription = true. Filter pattern syntax is described at https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html
     }
   },
   artifact_bucket  = {name="LAMBDA_ARTIFACT_BUCKET_NAME", id="LAMBDA_ARTIFACT_BUCKET_NAME", arn="arn:aws:s3:::LAMBDA_ARTIFACT_BUCKET_NAME"}
@@ -108,8 +110,15 @@ module "bronto_aws_log_forwarding" {
     excluded_log_groups = ["log_group1", "log_group2"]
   }
   bronto_tags = {environment = "production", region="eu-west-1"}
+  default_subscription_filter_pattern = "<MY_DEFAULT_FILTER_PATTERN>"  # filter pattern syntax is described at https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html
 }
 ```
+Note: It is recommended to use account level subscription filters rather than log group level ones. Therefore, when 
+following this recommendation, it should not be necessary to include Cloudwatch logs in the `destination_config` section 
+of the configuration unless:
+- you wish to not rely on the default `collection` and `dataset` names
+- you wish to overwrite the default subscription filter pattern for specific log groups.
+
 
 And here is an example where only S3 logs are forwarded to Bronto:
 ```hcl
@@ -165,8 +174,18 @@ Aggregators aggregate multiline log entries into a single entry. The `default` a
 - `destination_config`: map of configurations indicating the type of data to be forwarded as well as the destination
   in Bronto where to send the data to. When forwarding data from Cloudwatch log groups, it is recommended to use account 
 level subscription filters and therefore not to add entries for log groups to this map. For data forwarded from S3, only 
-data matching entries in this map is forwarded and adding entries is therefore required in that case.
-- `paths_regex`: list of regex patterns to match against S3 key, e.g. 
+data matching entries in this map is forwarded and adding entries is therefore required in that case. `destination_config` takes the following attributes:
+  - logname: the Bronto dataset where to send the log data to
+  - logset: the Bronto collection that the dataset belongs to
+  - log_type: the type of logs, e.g. cloudwatch, s3_access_log
+  - set_individual_subscription: if set to true, then a log group subscription filter is set. Otherwise, the forwarder 
+  relies on an account level subscription filter. 
+  - subscription_filter_pattern: the subscription filter pattern to apply to the log group level subscription filter. 
+  This overwrites the default level subscription filter pattern. 
+- `paths_regex`: list of regex patterns to match against S3 key, e.g.
+- `default_subscription_filter_pattern`: the default filter pattern to apply to cloudwatch log group subscriptions. The 
+`subscription_filter_pattern` attribute of entries in `destination_config` takes precedence over 
+`default_subscription_filter_pattern`.
 
 ```json
 [{"pattern": "regex1 with dest_config_id capture group"}, {"pattern": "regex2 with dest_config_id capture group"}]
