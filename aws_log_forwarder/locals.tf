@@ -10,7 +10,7 @@ locals {
   role_arn                                = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name}"
   fct_destination_properties              = {
     for key, value in var.destination_config : key =>
-    {for prop in keys(value) : prop => value[prop] if prop != "set_individual_subscription"}
+    {for prop in ["logname", "logset", "log_type"]  : prop => value[prop]}
   }
   collector_extension_arn = var.forwarder_logs.collector_extension_arn != null ? var.forwarder_logs.collector_extension_arn : "arn:aws:lambda:${local.region_name}:184161586896:layer:opentelemetry-collector-arm64-0_12_0:1"
   otel_config_s3_key        = "config/collector.yaml"
@@ -42,7 +42,7 @@ locals {
   # Cloudwatch forwarding
   log_groups_with_individual_subscription = [
     for key in keys(var.destination_config) : key
-    if lookup(var.destination_config[key], "log_type", "") == "cloudwatch_log" && var.destination_config[key].set_individual_subscription
+    if var.destination_config[key].log_type == "cloudwatch_log" && var.destination_config[key].set_individual_subscription == true
   ]
   excluded_log_groups = var.account_level_cloudwatch_subscription == null ? [] : concat(var.account_level_cloudwatch_subscription.excluded_log_groups, [aws_cloudwatch_log_group.this.name], local.log_groups_with_individual_subscription)
   enable_account_level_subscription_filter = var.account_level_cloudwatch_subscription != null ? var.account_level_cloudwatch_subscription.enable : false
