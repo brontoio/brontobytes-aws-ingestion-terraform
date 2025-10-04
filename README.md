@@ -181,7 +181,8 @@ data matching entries in this map is forwarded and adding entries is therefore r
   - set_individual_subscription: if set to true, then a log group subscription filter is set. Otherwise, the forwarder 
   relies on an account level subscription filter. 
   - subscription_filter_pattern: the subscription filter pattern to apply to the log group level subscription filter. 
-  This overwrites the default level subscription filter pattern. 
+  This overwrites the default level subscription filter pattern.
+  - tags: a map whose values are strings, representing tags to be associated to the Bronto dataset, e.g. `{"key1": "value1", "key2": "value2"}`.
 - `paths_regex`: list of regex patterns to match against S3 key, e.g.
 - `default_subscription_filter_pattern`: the default filter pattern to apply to cloudwatch log group subscriptions. The 
 `subscription_filter_pattern` attribute of entries in `destination_config` takes precedence over 
