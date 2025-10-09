@@ -17,6 +17,7 @@ variable "destination_config" {
     logname: string
     logset: string
     log_type: string
+    tags: optional(map(string), {})
     set_individual_subscription: optional(bool)
     subscription_filter_pattern: optional(string)
   }))

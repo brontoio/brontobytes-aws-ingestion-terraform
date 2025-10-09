@@ -10,7 +10,7 @@ locals {
   role_arn                                = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.role_name}"
   fct_destination_properties              = {
     for key, value in var.destination_config : key =>
-    {for prop in ["logname", "logset", "log_type"]  : prop => value[prop]}
+    {for prop in ["logname", "logset", "log_type", "tags"]  : prop => value[prop]}
   }
   collector_extension_arn = var.forwarder_logs.collector_extension_arn != null ? var.forwarder_logs.collector_extension_arn : "arn:aws:lambda:${local.region_name}:184161586896:layer:opentelemetry-collector-arm64-0_12_0:1"
   otel_config_s3_key        = "config/collector.yaml"
