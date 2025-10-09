@@ -97,6 +97,11 @@ variable "artifact_version" {
   default     = "latest"
 }
 
+variable "artifact_url" {
+  description = "The URL to the log forwarder Lambda artefact, e.g. https://github.com/brontoio/brontobytes-aws-ingestion-python/releases/latest"
+  default     = null
+}
+
 variable "role_name" {
   description = "The name of an existing role to be used. No role is created if this property is set."
   default     = null

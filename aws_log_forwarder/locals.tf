@@ -26,7 +26,7 @@ locals {
   # Artefact
   filename                                = "lambda_${var.name}.zip"
   artefact_url_suffix                     = var.artifact_version == "latest" ? "latest/download/brontobytes-aws-ingestion-python.zip" : "download/${var.artifact_version}/brontobytes-aws-ingestion-python.zip"
-  artefact_url                            = "https://github.com/brontoio/brontobytes-aws-ingestion-python/releases/${local.artefact_url_suffix}"
+  artefact_url                            = var.artifact_url == null ? "https://github.com/brontoio/brontobytes-aws-ingestion-python/releases/${local.artefact_url_suffix}" : var.artifact_url
   artefact_url_b64sha256                  = "${local.artefact_url}.b64sha256"
   artefact_bucket_default_name            = "bronto-aws-forwarder-${data.aws_caller_identity.current.account_id}-${local.region_name}"
   artefact_bucket                         = var.artifact_bucket.name == null ? {
