@@ -178,3 +178,12 @@ variable "default_subscription_filter_pattern" {
   description = "The subscription filter pattern to apply if no specific filter is defined at the log group level"
   default     = ""
 }
+
+variable "artefact_bucket_versioning_configuration" {
+  description = "Bucket versioning configuration"
+  type        = object({
+    status: string
+    non_current_versions_ttl_days: number
+  })
+  default     = { status = "Disabled", non_current_versions_ttl_days = null }
+}
