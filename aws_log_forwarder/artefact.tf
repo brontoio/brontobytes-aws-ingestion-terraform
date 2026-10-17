@@ -12,6 +12,7 @@ module "artefact_bucket" {
   name   = local.artefact_bucket["name"]
   tags   = var.tags
   versioning_configuration = var.artefact_bucket_versioning_configuration
+  artefact_logging_bucket  = var.artifact_bucket.logging_bucket
 }
 
 resource "aws_s3_object" "log_forwarder" {
