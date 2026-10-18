@@ -208,7 +208,29 @@ The lambda code artifact is automatically downloaded from Bronto's Github reposi
 attributes specify the bucket where to upload the artifact to so that is can be used to define the forwarding lambda. 
 - `artifact_bucket`: an object representing the S3 bucket where the lambda code artifact should be stored. If the 
 `create` attribute is set to `true`, then a bucket is created with either the specified `name` or with a default name 
-(currently `bronto-aws-forwarder-<ACCOUNT_ID>-<REGION>`).
+(currently `bronto-aws-forwarder-<ACCOUNT_ID>-<REGION>`). Some compliance framework require for access logging to be 
+enabled on S3 bucket. To support this case, an optional `logging_bucket` object can the defined within the `artifact_bucket` 
+attribute, so that access to the artefact bucket is logged to the defined logging bucket, which takes the following 
+attributes: 
+  - `bucket_name`: the name of the bucket where access logs are delivered. This bucket must already exist and allow
+    S3 log delivery.
+  - `prefix`: the prefix under which access logs are delivered. Logs are written to
+    `<prefix>/<ARTIFACT_BUCKET_NAME>/`.
+  - `with_partition_prefix`: optional boolean, defaults to `false`. If `true`, delivered log objects use a date
+    partitioned key format (based on event time).
+
+  For instance:
+  ```hcl
+  artefact_bucket = {
+    create         = true
+    logging_bucket = {
+      bucket_name           = "<ACCESS_LOGS_BUCKET_NAME>"
+      prefix                = "<ACCESS_LOGS_PREFIX>"
+      with_partition_prefix = true
+    }
+  }
+  ```
+
 - `artifact_version`: the version of the lambda artifact to be used, e.g. `latest`
 
 ### Forwarding from S3:

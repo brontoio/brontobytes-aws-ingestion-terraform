@@ -80,12 +80,17 @@ variable "uncompressed_max_batch_size" {
 }
 
 variable "artifact_bucket" {
-  description = "Config object representing the artifact bucket (a.k.a. codedeploy bucket). When create = false and name is null, default name is bronto-aws-forwarder-<ACCOUNT_ID>-<REGION>"
+  description = "Config object representing the artifact bucket where the forwarder lambda artefact is stored. When create = false and name is null, default name is bronto-aws-forwarder-<ACCOUNT_ID>-<REGION>"
   type        = object({
     create: optional(bool, false)
     arn: optional(string)
     id: optional(string)
     name: optional(string)
+    logging_bucket: optional(object({
+      bucket_name : string
+      prefix : string
+      with_partition_prefix : optional(bool, false)
+    }))
   })
   validation {
     condition = var.artifact_bucket.create || var.artifact_bucket.name != null

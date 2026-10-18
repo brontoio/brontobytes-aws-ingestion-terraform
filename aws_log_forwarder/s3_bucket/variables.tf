@@ -47,3 +47,13 @@ variable "extra_metrics" {
   })
   default     = { enabled = false, filter_id = null }
 }
+
+variable "artefact_logging_bucket" {
+  description = "The name of the destination bucket for access logs"
+  default     = null
+  type = object({
+    bucket_name : string
+    prefix : string
+    with_partition_prefix : optional(bool, true)
+  })
+}

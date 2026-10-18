@@ -96,6 +96,24 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
   }
 }
 
+# Access Logging
+resource "aws_s3_bucket_logging" "this" {
+  for_each = toset(var.artefact_logging_bucket == null ? [] : [var.artefact_logging_bucket.bucket_name])
+  bucket   = aws_s3_bucket.this.id
+
+  target_bucket = var.artefact_logging_bucket.bucket_name
+  target_prefix = "${var.artefact_logging_bucket.prefix}/${endswith(aws_s3_bucket.this.bucket, "/") ? aws_s3_bucket.this.bucket : format("%s/", aws_s3_bucket.this.bucket)}"
+
+  dynamic "target_object_key_format" {
+    for_each = var.artefact_logging_bucket.with_partition_prefix ? { "partition_prefix" : true } : {}
+    content {
+      partitioned_prefix {
+        partition_date_source = "EventTime"
+      }
+    }
+  }
+}
+
 # Extra bucket metrics
 resource "aws_s3_bucket_metric" "this" {
   count  = var.extra_metrics.enabled ? 1 : 0
